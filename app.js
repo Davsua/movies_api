@@ -12,9 +12,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/v1/actors', actorsRoutes);
 
-app.use('/api/v1/actors', moviesRoutes);
+app.use('/api/v1/movies', moviesRoutes);
 
-app.use('/api/v1/actors', usersRoutes);
+app.use('/api/v1/users', usersRoutes);
 
 //access to errors from AppError
 app.use(globalErrorHandler);

@@ -7,9 +7,7 @@ const { AppError } = require('../utils/appError');
 const { filterObj } = require('../utils/filterObjects');
 
 exports.getAllActors = catchAsync(async (req, res, next) => {
-  const actors = await Actor.findAll({
-    attributes: { exclude: 'password' }
-  });
+  const actors = await Actor.findAll();
 
   res.status(200).json({
     status: 'succes',
@@ -77,7 +75,7 @@ exports.updateActor = catchAsync(async (req, res, next) => {
 exports.deleteActor = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
-  const actor = Actor.findOne({ where: { id } });
+  const actor = await Actor.findOne({ where: { id } });
 
   if (!actor) {
     return next(new AppError(400, 'actor doesnt found'));
