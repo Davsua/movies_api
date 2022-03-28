@@ -12,7 +12,10 @@ const { filterObj } = require('../utils/filterObjects');
 dotenv.config({ path: './config.env' });
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.findAll({ attributes: { exclude: 'password' } });
+  const users = await User.findAll({
+    attributes: { exclude: 'password' },
+    where: { status: 'active' }
+  });
 
   res.status(200).json({
     status: 'succes',
@@ -21,16 +24,7 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
 });
 
 exports.getUserById = catchAsync(async (req, res, next) => {
-  const { id } = req.params;
-
-  const user = await User.findOne({
-    where: { id },
-    attributes: { exclude: 'password' }
-  });
-
-  if (!user) {
-    next(new AppError(400, 'user not found'));
-  }
+  const { user } = req;
 
   res.status(200).json({
     status: 'succes',
@@ -39,7 +33,7 @@ exports.getUserById = catchAsync(async (req, res, next) => {
 });
 
 exports.createUser = catchAsync(async (req, res, next) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role } = req.body;
 
   if (!username || !email || !password) {
     next(new AppError(400, 'must provide all the fields'));
@@ -51,7 +45,8 @@ exports.createUser = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     username,
     email,
-    password: hashPassword
+    password: hashPassword,
+    role
   });
 
   newUser.password = undefined;
@@ -86,17 +81,9 @@ exports.loginUser = catchAsync(async (req, res, next) => {
 });
 
 exports.updateUser = catchAsync(async (req, res, next) => {
-  const { id } = req.params;
+  const { user } = req;
 
   const data = filterObj(req.body, 'username', 'email', 'password');
-
-  const user = await User.findOne({
-    where: { id }
-  });
-
-  if (!user) {
-    next(new AppError(400, 'user not found'));
-  }
 
   await user.update({ ...data });
 
@@ -106,11 +93,7 @@ exports.updateUser = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteUser = catchAsync(async (req, res, next) => {
-  const { id } = req.params;
-
-  const user = User.findOne({
-    where: { id }
-  });
+  const { user } = req;
 
   (await user).update({ status: 'delete' });
 

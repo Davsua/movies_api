@@ -7,20 +7,32 @@ const {
   deleteUser,
   loginUser
 } = require('../controller/user.controller');
-const { authenticateSesion } = require('../middleware/auth.middleware');
+const {
+  authenticateSesion,
+  protectedAdmin
+} = require('../middleware/auth.middleware');
+
+const {
+  userExist,
+  protectAccountOwner
+} = require('../middleware/findUser.middleware');
 
 const router = express.Router();
-
-router.get('/', getAllUsers);
-
-router.get('/:id', authenticateSesion, getUserById);
 
 router.post('/', createUser);
 
 router.post('/login', loginUser);
 
-router.patch('/:id', authenticateSesion, updateUser);
+router.use(authenticateSesion);
 
-router.delete('/:id', authenticateSesion, deleteUser);
+router.get('/', protectedAdmin, getAllUsers);
+
+//simplify equal routes
+router
+  .use('/:id', userExist)
+  .route('/:id')
+  .get(getUserById)
+  .patch(protectAccountOwner, updateUser)
+  .delete(protectAccountOwner, deleteUser);
 
 module.exports = { usersRoutes: router };

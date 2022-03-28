@@ -9,8 +9,8 @@ const { User } = require('../models/user.model');
 
 dotenv.config({ path: './config.env' });
 
-const authenticateSesion = catchAsync(async (req, res, next) => {
-  let token;
+exports.authenticateSesion = catchAsync(async (req, res, next) => {
+  let token; // solo toma valor si entra en el sig if
 
   if (
     req.headers.authorization &&
@@ -22,9 +22,10 @@ const authenticateSesion = catchAsync(async (req, res, next) => {
     return next(new AppError(401, 'invalid session'));
   }
 
+  //verificar token, promisify para convertir una funcion sincrona en asincrona
   const decodedToken = await promisify(jwt.verify)(
-    token,
-    process.env.JWT_SECRETKEY
+    token, //verifica token como tal
+    process.env.JWT_SECRETKEY //verifica firma del token
   );
 
   const user = await User.findOne({
@@ -33,10 +34,20 @@ const authenticateSesion = catchAsync(async (req, res, next) => {
   });
 
   if (!user) {
-    return next(new AppError(401, 'invalid session, id doesnt exist'));
+    return next(
+      new AppError(401, 'invalid session, id doesnt exist / status: delete')
+    );
   }
+
+  req.currentUser = user;
 
   next();
 });
 
-module.exports = { authenticateSesion };
+exports.protectedAdmin = catchAsync(async (req, res, next) => {
+  if (req.currentUser.role !== 'admin') {
+    return next(new AppError(403, 'you cant do this'));
+  }
+
+  next();
+});

@@ -11,8 +11,8 @@ const sequelize = new Sequelize({
   password: process.env.DB_PASSWORD,
   port: 5432,
   database: process.env.DB,
-  dialect: 'postgres'
-  //logging: false
+  dialect: 'postgres',
+  logging: false
 });
 
 module.exports = { sequelize };
