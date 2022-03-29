@@ -3,12 +3,14 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 
 const { User } = require('../models/user.model');
-const actorsRoutes = require('../Routes/actors.routes');
 const { AppError } = require('../utils/appError');
+const { Review } = require('../models/review.model');
 
 const { catchAsync } = require('../utils/catchAsync');
 const { filterObj } = require('../utils/filterObjects');
-const { Review } = require('../models/review.model');
+const { Email } = require('../utils/emails');
+
+const actorsRoutes = require('../Routes/actors.routes');
 
 dotenv.config({ path: './config.env' });
 
@@ -52,6 +54,9 @@ exports.createUser = catchAsync(async (req, res, next) => {
   });
 
   newUser.password = undefined;
+
+  // Send mail to newly created account
+  await new Email(email).send();
 
   res.status(200).json({
     status: 'succes',

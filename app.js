@@ -8,6 +8,10 @@ const { usersRoutes } = require('./Routes/user.routes');
 const { globalErrorHandler } = require('./utils/errorHandler');
 
 const app = express();
+
+//set pug as predeterminate maqueting (en vez de html)
+app.set('view engine', 'pug');
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
