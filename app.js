@@ -1,6 +1,7 @@
 const express = require('express');
 
 const { actorsRoutes } = require('./Routes/actors.routes');
+const { reviewRoutes } = require('./Routes/movieReview.route');
 const { moviesRoutes } = require('./Routes/movies.routes');
 const { usersRoutes } = require('./Routes/user.routes');
 
@@ -15,6 +16,8 @@ app.use('/api/v1/actors', actorsRoutes);
 app.use('/api/v1/movies', moviesRoutes);
 
 app.use('/api/v1/users', usersRoutes);
+
+app.use('/api/v1/reviews', reviewRoutes);
 
 //access to errors from AppError
 app.use(globalErrorHandler);

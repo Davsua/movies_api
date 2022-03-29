@@ -8,13 +8,15 @@ const { AppError } = require('../utils/appError');
 
 const { catchAsync } = require('../utils/catchAsync');
 const { filterObj } = require('../utils/filterObjects');
+const { Review } = require('../models/review.model');
 
 dotenv.config({ path: './config.env' });
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   const users = await User.findAll({
     attributes: { exclude: 'password' },
-    where: { status: 'active' }
+    where: { status: 'active' },
+    include: [{ model: Review }]
   });
 
   res.status(200).json({

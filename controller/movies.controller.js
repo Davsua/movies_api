@@ -4,6 +4,8 @@ const { ref, uploadBytes } = require('firebase/storage');
 const { Actor } = require('../models/actor.model');
 const { ActorInMovie } = require('../models/actorsInMovie');
 const { Movie } = require('../models/movie.model');
+const { Review } = require('../models/review.model');
+const { User } = require('../models/user.model');
 
 const { AppError } = require('../utils/appError');
 const { catchAsync } = require('../utils/catchAsync');
@@ -15,6 +17,10 @@ exports.getAllMovies = catchAsync(async (req, res, next) => {
     include: [
       {
         model: Actor
+      },
+      {
+        model: Review,
+        include: [{ model: User }]
       }
     ]
   });
